@@ -1,0 +1,13 @@
+import { useRouter, useSearchParams } from "next/navigation";
+
+interface PageProps {}
+
+const Page = ({}: PageProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const origin = searchParams.get("origin");
+
+  return <div>Page</div>;
+};
+
+export default Page;
