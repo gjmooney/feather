@@ -19,7 +19,7 @@ const UploadButton = ({}: UploadButtonProps) => {
       }}
     >
       <DialogTrigger asChild onClick={() => setIsOpen(true)}>
-        <Button>Upload File</Button>
+        <Button variant={"gradient"}>Upload File</Button>
       </DialogTrigger>
 
       <DialogContent>shut up</DialogContent>
