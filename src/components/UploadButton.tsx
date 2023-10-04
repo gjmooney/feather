@@ -1,7 +1,9 @@
 "use client";
 
+import { trpc } from "@/app/_trpc/client";
 import { useUploadThing } from "@/lib/uploadthing";
 import { Cloud, File } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Dropzone from "react-dropzone";
 import { Button } from "./ui/button";
@@ -12,11 +14,19 @@ import { useToast } from "./ui/use-toast";
 interface UploadButtonProps {}
 
 const UploadDropzone = () => {
+  const router = useRouter();
   const [isUploading, setIsUploading] = useState(true);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const { startUpload } = useUploadThing("pdfUploader");
   const { toast } = useToast();
+  const { startUpload } = useUploadThing("pdfUploader");
+  const { mutate: startPolling } = trpc.getFile.useMutation({
+    onSuccess: (file) => {
+      router.push(`/dashboard/${file.id}`);
+    },
+    retry: true,
+    retryDelay: 500,
+  });
 
   const startSimulatedProgress = () => {
     setUploadProgress(0);
@@ -64,6 +74,8 @@ const UploadDropzone = () => {
 
         clearInterval(progressInterval);
         setUploadProgress(100);
+
+        startPolling({ key });
       }}
     >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
