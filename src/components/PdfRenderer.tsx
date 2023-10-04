@@ -2,7 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp, Loader2, Search } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  RotateCw,
+  Search,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -11,6 +17,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { useResizeDetector } from "react-resize-detector";
 import SimpleBar from "simplebar-react";
 import { z } from "zod";
+import PdfFullScreen from "./PdfFullScreen";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -31,6 +38,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
   const [numPages, setNumPages] = useState<number>();
   const [currentPage, setCurrentPage] = useState(1);
   const [scale, setScale] = useState(1);
+  const [rotation, setRotation] = useState(0);
 
   const { toast } = useToast();
   const { width, ref } = useResizeDetector();
@@ -70,6 +78,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
             disabled={currentPage <= 1}
             onClick={() => {
               setCurrentPage((prev) => (prev - 1 > 1 ? prev - 1 : 1));
+              setValue("page", String(currentPage - 1));
             }}
           >
             <ChevronUp className="h-4 w-4" />
@@ -102,6 +111,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
               setCurrentPage((prev) =>
                 prev + 1 > numPages! ? numPages! : prev + 1
               );
+              setValue("page", String(currentPage + 1));
             }}
           >
             <ChevronDown className="h-4 w-4" />
@@ -131,6 +141,16 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Button
+            aria-label="rotate 90 degrees"
+            variant={"ghost"}
+            onClick={() => setRotation((prev) => prev + 90)}
+          >
+            <RotateCw className="h-4 w-4" />
+          </Button>
+
+          <PdfFullScreen url={url} />
         </div>
       </div>
 
@@ -158,6 +178,7 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
                 width={width ? width : 1}
                 pageNumber={currentPage}
                 scale={scale}
+                rotate={rotation}
               />
             </Document>
           </div>
