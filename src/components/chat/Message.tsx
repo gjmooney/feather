@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { ExtendedMessage } from "@/types/message";
-import { Icons } from "../Icons";
-import ReactMarkdown from "react-markdown";
 import { format } from "date-fns";
+import ReactMarkdown from "react-markdown";
+import { Icons } from "../Icons";
 
 interface MessageProps {
   isNextMessageSamePerson: boolean;
@@ -41,7 +41,7 @@ const Message = ({ isNextMessageSamePerson, message }: MessageProps) => {
       >
         <div
           className={cn("px-4 py-2 rounded-lg inline-block", {
-            "bg-blue-600 text-white": message.isUserMessage,
+            "bg-purple-600 text-white": message.isUserMessage,
             "bg-gray-200 text-gray-900": !message.isUserMessage,
             "rounded-br-none":
               !isNextMessageSamePerson && message.isUserMessage,
@@ -64,7 +64,7 @@ const Message = ({ isNextMessageSamePerson, message }: MessageProps) => {
             <div
               className={cn("text-xs select-none mt-2 w-full text-right", {
                 "text-zinc-500": !message.isUserMessage,
-                "text-blue-300": message.isUserMessage,
+                "text-purple-300": message.isUserMessage,
               })}
             >
               {format(new Date(message.createdAt), "HH:mm")}

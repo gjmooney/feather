@@ -40,48 +40,46 @@ const Messages = ({ fileId }: MessagesProps) => {
 
   return (
     <div className="flex max-h-[calc(100vh-3.5rem-7rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-      <div className="">
-        {combinedMessages?.length > 0 ? (
-          combinedMessages.map((message, i) => {
-            const isNextMessageSamePerson =
-              combinedMessages[i - 1]?.isUserMessage ===
-              combinedMessages[i]?.isUserMessage;
+      {combinedMessages && combinedMessages?.length > 0 ? (
+        combinedMessages.map((message, i) => {
+          const isNextMessageSamePerson =
+            combinedMessages[i - 1]?.isUserMessage ===
+            combinedMessages[i]?.isUserMessage;
 
-            if (i === combinedMessages.length - 1) {
-              return (
-                <Message
-                  key={message.id}
-                  isNextMessageSamePerson={isNextMessageSamePerson}
-                  message={message}
-                />
-              );
-            } else {
-              return (
-                <Message
-                  key={message.id}
-                  isNextMessageSamePerson={isNextMessageSamePerson}
-                  message={message}
-                />
-              );
-            }
-          })
-        ) : isLoading ? (
-          <div className="w-full flex flex-col gap-2">
-            <Skeleton className="h-16" />
-            <Skeleton className="h-16" />
-            <Skeleton className="h-16" />
-            <Skeleton className="h-16" />
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center gap-2">
-            <MessageSquare className="h-8 w-8 text-purple-500" />
-            <h3 className="font-semibold text-xl">You&apos;re all set.</h3>
-            <p className="text-zinc-500 text-sm">
-              Ask your first question to get started.
-            </p>
-          </div>
-        )}
-      </div>
+          if (i === combinedMessages.length - 1) {
+            return (
+              <Message
+                key={message.id}
+                isNextMessageSamePerson={isNextMessageSamePerson}
+                message={message}
+              />
+            );
+          } else {
+            return (
+              <Message
+                key={message.id}
+                isNextMessageSamePerson={isNextMessageSamePerson}
+                message={message}
+              />
+            );
+          }
+        })
+      ) : isLoading ? (
+        <div className="w-full flex flex-col gap-2">
+          <Skeleton className="h-16" />
+          <Skeleton className="h-16" />
+          <Skeleton className="h-16" />
+          <Skeleton className="h-16" />
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center gap-2">
+          <MessageSquare className="h-8 w-8 text-purple-500" />
+          <h3 className="font-semibold text-xl">You&apos;re all set.</h3>
+          <p className="text-zinc-500 text-sm">
+            Ask your first question to get started.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
