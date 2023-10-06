@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { pinecone } from "@/lib/pinecone";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import { CohereEmbeddings } from "langchain/embeddings/cohere";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
@@ -51,8 +51,8 @@ export const ourFileRouter = {
 
         // vectorize and index document
         const pineconeIndex = pinecone.Index("feather");
-        const embeddings = new CohereEmbeddings({
-          apiKey: process.env.COHERE_API_KEY!,
+        const embeddings = new OpenAIEmbeddings({
+          openAIApiKey: process.env.OPENAI_API_KEY!,
         });
 
         await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {

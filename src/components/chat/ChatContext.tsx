@@ -9,7 +9,7 @@ type TChatContext = {
   isLoading: boolean;
 };
 
-const ChatContext = createContext<TChatContext>({
+export const ChatContext = createContext<TChatContext>({
   addMessage: () => {},
   message: "",
   handleInputChange: () => {},
@@ -46,6 +46,7 @@ export const ChatContextProvider = ({ fileId, children }: ChatContextProps) => {
   });
 
   const addMessage = () => sendMessage({ message });
+
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
