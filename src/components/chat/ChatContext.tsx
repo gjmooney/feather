@@ -1,5 +1,7 @@
+import { trpc } from "@/app/_trpc/client";
+import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { useMutation } from "@tanstack/react-query";
-import { ChangeEvent, ReactNode, createContext, useState } from "react";
+import { ChangeEvent, ReactNode, createContext, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
 
 type TChatContext = {
@@ -25,7 +27,11 @@ export const ChatContextProvider = ({ fileId, children }: ChatContextProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const utils = trpc.useContext();
+
   const { toast } = useToast();
+
+  const backupMessage = useRef("");
 
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string }) => {
@@ -42,6 +48,59 @@ export const ChatContextProvider = ({ fileId, children }: ChatContextProps) => {
       }
 
       return response.body;
+    },
+    onMutate: async ({ message }) => {
+      //optimistic updates
+      backupMessage.current = message;
+      setMessage(""); //clear input
+
+      await utils.getFileMessages.cancel();
+
+      const prevMessages = utils.getFileMessages.getInfiniteData();
+
+      utils.getFileMessages.setInfiniteData(
+        {
+          fileId,
+          limit: INFINITE_QUERY_LIMIT,
+        },
+        (oldData) => {
+          if (!oldData) {
+            return {
+              pages: [],
+              pageParams: [],
+            };
+          }
+
+          let newPages = [...oldData.pages];
+
+          let latestPage = newPages[0]!;
+
+          latestPage.messages = [
+            {
+              createdAt: new Date().toISOString(),
+              id: crypto.randomUUID(),
+              text: message,
+              isUserMessage: true,
+            },
+            ...latestPage.messages,
+          ];
+
+          newPages[0] = latestPage;
+
+          return {
+            ...oldData,
+            pages: newPages,
+          };
+        }
+      );
+
+      setIsLoading(true);
+
+      return {
+        previousMessages: prevMessages?.pages.flatMap(
+          (page) => page.messages ?? []
+        ),
+      };
     },
   });
 
