@@ -102,6 +102,90 @@ export const ChatContextProvider = ({ fileId, children }: ChatContextProps) => {
         ),
       };
     },
+    onSuccess: async (stream) => {
+      setIsLoading(false);
+
+      if (!stream) {
+        return toast({
+          title: "There was a problem sending the message",
+          description: "Please refresh this page and try again",
+          variant: "destructive",
+        });
+      }
+
+      const reader = stream.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      // accumulated response
+      let accResponse = "";
+
+      while (!done) {
+        const { done: doneReading, value } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+
+        accResponse += chunkValue;
+
+        // append chunk to actual message
+        utils.getFileMessages.setInfiniteData(
+          { fileId, limit: INFINITE_QUERY_LIMIT },
+          (oldData) => {
+            if (!oldData) {
+              return {
+                pages: [],
+                pageParams: [],
+              };
+            }
+
+            let isAiResponseCreated = oldData.pages.some((page) =>
+              page.messages.some((message) => message.id === "ai-response")
+            );
+
+            let updatedPages = oldData.pages.map((page) => {
+              if (page === oldData.pages[0]) {
+                let updatedMessages;
+
+                if (!isAiResponseCreated) {
+                  // creating response upon for initial chunk
+                  updatedMessages = [
+                    {
+                      createdAt: new Date().toISOString(),
+                      id: "ai-response",
+                      text: accResponse,
+                      isUserMessage: false,
+                    },
+                    ...page.messages,
+                  ];
+                } else {
+                  updatedMessages = page.messages.map((message) => {
+                    if (message.id === "ai-response") {
+                      return {
+                        ...message,
+                        text: accResponse,
+                      };
+                    }
+                    return message;
+                  });
+                }
+
+                return {
+                  ...page,
+                  messages: updatedMessages,
+                };
+              }
+
+              return page;
+            });
+
+            return {
+              ...oldData,
+              pages: updatedPages,
+            };
+          }
+        );
+      }
+    },
     onError: (_, __, context) => {
       setMessage(backupMessage.current);
       utils.getFileMessages.setData(
