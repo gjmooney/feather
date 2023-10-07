@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -33,6 +34,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </body>
+        <ReactQueryDevtools initialIsOpen={false} />
       </Providers>
     </html>
   );
