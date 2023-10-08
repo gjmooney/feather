@@ -33,7 +33,6 @@ const Dashboard = ({ subscriptionPlan }: DashboardProps) => {
       setCurrentlyDeletingFile(null);
     },
   });
-  console.log("files[0]", files);
 
   return (
     <main className="mx-auto max-w-7xl md:p-10">
