@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { getUserSubscriptionPlan } from "@/lib/stripe";
 
 interface UserAccountNavProps {
   email: string | undefined;
@@ -19,10 +20,12 @@ interface UserAccountNavProps {
   name: string;
 }
 
-const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
-  const subscriptionPlan = {
-    isSubscribed: false,
-  };
+const UserAccountNav = async ({
+  email,
+  imageUrl,
+  name,
+}: UserAccountNavProps) => {
+  const subscriptionPlan = await getUserSubscriptionPlan();
 
   return (
     <DropdownMenu>
