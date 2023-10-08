@@ -66,12 +66,12 @@
     height: 0.25rem;
   }
 
-  .scrollbar-track-blue-lighter::-webkit-scrollbar-track {
+  .scrollbar-track-purple-lighter::-webkit-scrollbar-track {
     --bg-opacity: 0.5;
     background-color: #b18af4;
   }
 
-  .scrollbar-thumb-blue::-webkit-scrollbar-thumb {
+  .scrollbar-thumb-purple::-webkit-scrollbar-thumb {
     --bg-opacity: 0.5;
     background-color: #7c3aed;
   }
