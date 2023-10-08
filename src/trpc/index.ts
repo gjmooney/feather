@@ -1,12 +1,12 @@
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
+import { PLANS } from "@/config/stripe";
 import { db } from "@/db";
+import { getUserSubscriptionPlan, stripe } from "@/lib/stripe";
+import { absoluteUrl } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { privateProcedure, publicProcedure, router } from "./trpc";
-import { absoluteUrl } from "@/lib/utils";
-import { getUserSubscriptionPlan, stripe } from "@/lib/stripe";
-import { PLANS } from "@/config/stripe";
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -40,6 +40,9 @@ export const appRouter = router({
     return await db.file.findMany({
       where: {
         userId,
+      },
+      include: {
+        messages: true,
       },
     });
   }),

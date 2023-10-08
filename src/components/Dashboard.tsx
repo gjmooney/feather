@@ -1,6 +1,7 @@
 "use client";
 
 import { trpc } from "@/app/_trpc/client";
+import { getUserSubscriptionPlan } from "@/lib/stripe";
 import { format } from "date-fns";
 import { Ghost, Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import Link from "next/link";
@@ -9,9 +10,11 @@ import Skeleton from "react-loading-skeleton";
 import UploadButton from "./UploadButton";
 import { Button } from "./ui/button";
 
-interface DashboardProps {}
+interface DashboardProps {
+  subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
+}
 
-const Dashboard = ({}: DashboardProps) => {
+const Dashboard = ({ subscriptionPlan }: DashboardProps) => {
   const [currentlyDeletingFile, setCurrentlyDeletingFile] = useState<
     string | null
   >(null);
@@ -30,13 +33,14 @@ const Dashboard = ({}: DashboardProps) => {
       setCurrentlyDeletingFile(null);
     },
   });
+  console.log("files[0]", files);
 
   return (
     <main className="mx-auto max-w-7xl md:p-10">
       <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
         <h1 className="mb-3 font-bold text-5xl text-gray-900">My Files</h1>
 
-        <UploadButton />
+        <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />
       </div>
 
       {/* display users files */}
@@ -75,9 +79,15 @@ const Dashboard = ({}: DashboardProps) => {
                     {format(new Date(file.createdAt), "MMM yyyy")}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4" />
-                    mocked
+                  <div className="flex items-center gap-2 w-full">
+                    <MessageSquare className="h-4 w-4 shrink-0" />
+                    {file.messages[0] ? (
+                      <span className="truncate">
+                        {file.messages[file.messages.length - 1].text}
+                      </span>
+                    ) : (
+                      <span>Start a convo</span>
+                    )}
                   </div>
 
                   <Button
